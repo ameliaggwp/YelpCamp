@@ -19,7 +19,8 @@ app.set("view engine" , "ejs");
 //Schema Setup
 var campgroundSchema = new mongoose.Schema({
 	name:String,
-	image: String
+	image: String,
+	description: String
 });
 
 var Campground = mongoose.model("Campground", campgroundSchema);
@@ -46,7 +47,7 @@ app.get("/campgrounds", function(req, res){
 		if(err){
 			console.log (err)
 		}else{
-			res.render("campgrounds", {campgrounds: allCampgrounds })
+			res.render("index", {campgrounds: allCampgrounds })
 		}
 	});
 });
@@ -54,7 +55,8 @@ app.get("/campgrounds", function(req, res){
 app.post("/campgrounds",function(req, res){
 	var name = req.body.name;
 	var image = req.body.image;
-	var newCampground = {name: name, image: image}
+	var desc = req.body.description;
+	var newCampground = {name: name, image: image, desciption:desc}
 	// Create a new camopground and save
 	Campground.create(newCampground, function(err,newlyCreated){
 		if(err){
@@ -68,6 +70,19 @@ app.post("/campgrounds",function(req, res){
 app.get ("/campgrounds/new", function(req, res){
 	res.render("new");
 })
+
+//Show - shows more info about one campground
+app.get ("/campgrounds/:id", function(req,res){
+	//find the campground with provided ID
+	Campground.findById(req.params.id, function(err, foundCampground){
+		if(err){
+			console.log (err)
+		}else{
+			res.render("show", {campground: foundCampground});
+		}
+	});
+	//render show template with that campground
+});
 
 app.listen(3000, function(){
 	console.log ("YelpCamp Up!")
